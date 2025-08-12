@@ -123,12 +123,12 @@ func validationConfigToArgs(logger logr.Logger, cfg v1alpha1.ValidationConfig, s
 		return res
 	}
 
-	if cfg.PrivateKeyConfig != nil {
-		logger.Info("found private-key config")
+	if cfg.ECKeyConfig != nil {
+		logger.Info("found EC key config")
 		res = append(res,
 			"key",
 			fmt.Sprintf("--signature=%s", signaturePath),
-			"--public_key", cfg.PrivateKeyConfig.KeyPath,
+			"--public_key", cfg.ECKeyConfig.KeyPath,
 		)
 		return res
 	}

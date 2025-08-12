@@ -25,7 +25,13 @@ import (
 
 // Model defines the details of the model to validate.
 type Model struct {
-	Path          string `json:"path"`
+	// Path to the model file.
+	// +kubebuilder:validation:Required
+	// +kubebuilder:validation:MinLength=1
+	Path string `json:"path"`
+	// Path to the signature file.
+	// +kubebuilder:validation:Required
+	// +kubebuilder:validation:MinLength=1
 	SignaturePath string `json:"signaturePath"`
 }
 
@@ -43,19 +49,20 @@ type PkiConfig struct {
 	CertificateAuthority string `json:"certificateAuthority,omitempty"`
 }
 
-// PrivateKeyConfig defines the private key verification configuration
-// for validating model signatures using a local private key
-type PrivateKeyConfig struct {
-	// Path to the private key.
+// ECKeyConfig defines the configuration for validating model signatures
+// using a local Elliptic Curve (EC) public key.
+type ECKeyConfig struct {
+	// Path to the EC public key file.
 	KeyPath string `json:"keyPath,omitempty"`
 }
 
 // ValidationConfig defines the various methods available for validating model signatures.
-// At least one validation method must be specified.
+// Only one validation method can be specified.
+// +kubebuilder:validation:XValidation:rule="size([has(self.sigstoreConfig), has(self.pkiConfig), has(self.ECKeyConfig)].filter(x, x == true)) == 1",message="exactly one validation config (sigstoreConfig, pkiConfig, or ECKeyConfig) must be specified"
 type ValidationConfig struct {
-	SigstoreConfig   *SigstoreConfig   `json:"sigstoreConfig,omitempty"`
-	PkiConfig        *PkiConfig        `json:"pkiConfig,omitempty"`
-	PrivateKeyConfig *PrivateKeyConfig `json:"privateKeyConfig,omitempty"`
+	SigstoreConfig *SigstoreConfig `json:"sigstoreConfig,omitempty"`
+	PkiConfig      *PkiConfig      `json:"pkiConfig,omitempty"`
+	ECKeyConfig    *ECKeyConfig    `json:"ECKeyConfig,omitempty"`
 }
 
 // ModelValidationSpec defines the desired state of ModelValidation
@@ -64,8 +71,10 @@ type ModelValidationSpec struct {
 	// Important: Run "make" to regenerate code after modifying this file
 
 	// Model details.
+	// +kubebuilder:validation:Required
 	Model Model `json:"model"`
 	// Configuration for validation methods.
+	// +kubebuilder:validation:Required
 	Config ValidationConfig `json:"config"`
 }
 

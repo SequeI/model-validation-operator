@@ -42,6 +42,15 @@ spec:
               config:
                 description: Configuration for validation methods.
                 properties:
+                  ECKeyConfig:
+                    description: |-
+                      ECKeyConfig defines the configuration for validating model signatures
+                      using a local Elliptic Curve (EC) public key.
+                    properties:
+                      keyPath:
+                        description: Path to the EC public key file.
+                        type: string
+                    type: object
                   pkiConfig:
                     description: |-
                       PkiConfig defines the PKI-based verification configuration
@@ -49,15 +58,6 @@ spec:
                     properties:
                       certificateAuthority:
                         description: Path to the certificate authority for PKI.
-                        type: string
-                    type: object
-                  privateKeyConfig:
-                    description: |-
-                      PrivateKeyConfig defines the private key verification configuration
-                      for validating model signatures using a local private key
-                    properties:
-                      keyPath:
-                        description: Path to the private key.
                         type: string
                     type: object
                   sigstoreConfig:
@@ -71,12 +71,21 @@ spec:
                         type: string
                     type: object
                 type: object
+                x-kubernetes-validations:
+                - message: exactly one validation config (sigstoreConfig, pkiConfig,
+                    or ECKeyConfig) must be specified
+                  rule: size([has(self.sigstoreConfig), has(self.pkiConfig), has(self.ECKeyConfig)].filter(x,
+                    x == true)) == 1
               model:
                 description: Model details.
                 properties:
                   path:
+                    description: Path to the model file.
+                    minLength: 1
                     type: string
                   signaturePath:
+                    description: Path to the signature file.
+                    minLength: 1
                     type: string
                 required:
                 - path

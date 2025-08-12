@@ -48,9 +48,9 @@ var _ = Describe("Pod webhook", func() {
 						SignaturePath: "test",
 					},
 					Config: v1alpha1.ValidationConfig{
-						SigstoreConfig:   nil,
-						PkiConfig:        nil,
-						PrivateKeyConfig: nil,
+						SigstoreConfig: nil,
+						PkiConfig:      nil,
+						ECKeyConfig:    nil,
 					},
 				},
 			})
