@@ -44,14 +44,16 @@ var _ = Describe("Pod webhook", func() {
 				},
 				Spec: v1alpha1.ModelValidationSpec{
 					Model: v1alpha1.Model{
-						Path:          "test",
-						SignaturePath: "test",
+						Path:          "/path/to/model.onnx",
+						SignaturePath: "/path/to/model.onnx.sig",
 					},
 					Config: v1alpha1.ValidationConfig{
-						SigstoreConfig:   nil,
-						PkiConfig:        nil,
-						PrivateKeyConfig: nil,
-					},
+						SigstoreConfig: &v1alpha1.SigstoreConfig{
+							CertificateIdentity:   "test-identity",
+							CertificateOidcIssuer: "test-issuer",
+						},
+						PkiConfig:       nil,
+						PublicKeyConfig: nil},
 				},
 			})
 			Expect(err).To(Not(HaveOccurred()))
